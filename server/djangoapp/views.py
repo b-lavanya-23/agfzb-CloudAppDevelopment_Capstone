@@ -77,24 +77,28 @@ def registration_request(request):
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
+    context={}
     if request.method == "GET":
         url = "https://5d8df0b3-9c09-4b9b-a632-6effe8874263-bluemix.cloudantnosqldb.appdomain.cloud/dealerships/dealer-get"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
+        context={dealerships}
         # Concat all dealer's short name
         dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
         # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        return render(request, 'djangoapp/index.html', context)
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 def get_dealer_details(request, dealer_id):
+    context={}
     if request.method=="GET":
         url="https://us-south.functions.appdomain.cloud/api/v1/web/30411ce4-fef6-4c74-9728-cc95aa414e64/dealership-package/get-review"
         reviews=get_dealer_reviews_from_cf(url)
+        context={reviews}
         review_details=' '.join([review.id for review in reviews])
         for review in review_details:
             print(review.sentiment)
-        return HttpResponse(review_details)
+        return render(request, 'djangoapp/dealer_details.html', context)
     
 
 # Create a `add_review` view to submit a review
