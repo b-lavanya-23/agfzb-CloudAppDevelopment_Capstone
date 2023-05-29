@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
 from .models import CarMake, CarModel, DealerReview, CarDealer
 # from .restapis import related methods
-from .restapis import get_request, get_dealer_reviews_from_cf, get_dealers_from_cf, post_request, analyze_review_sentiments
+from .restapis import get_request, get_dealer_reviews_from_cf, get_dealers_from_cf, analyze_review_sentiments
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -118,6 +118,13 @@ def add_review(request, dealer_id):
             review_response=post_request(url,json_payload, dealer_id=dealer_id)
             print(review_response)
             return HttpResponse(review_response)
+    if request.method=="GET":
+        json_payload["review"]=review
+        review["time"]=datetime.utcnow.isoformat(review["time"])
+        review["purchase"]=car.year.strftime("%Y")
+        redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+
+
 
 
 
